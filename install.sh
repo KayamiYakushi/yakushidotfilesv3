@@ -5,13 +5,13 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_DIR="$HOME/.config/yakushidotfiles-backup-$(date +%Y%m%d-%H%M%S)"
 
 if ! command -v pacman &>/dev/null; then
-    echo "HATA: Bu betik yalnizca pacman kullanan Arch (tabanli) sistemlerde calisir." >&2
+    echo "ERROR: This script only works on Arch (based) systems that use pacman." >&2
     exit 1
 fi
 
 if [ "$(id -u)" -eq 0 ]; then
-    echo "HATA: Bu betigi root olarak degil, normal kullanici olarak calistirin." >&2
-    echo "      (sudo gerektiginde zaten sifre soracak)" >&2
+    echo "ERROR: Run this script as a regular user, not root." >&2
+    echo "      (sudo will ask for the password if needed)" >&2
     exit 1
 fi
 
