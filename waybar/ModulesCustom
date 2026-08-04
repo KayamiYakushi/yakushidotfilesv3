@@ -1,0 +1,12 @@
+{
+    "custom/cpu_temp": {
+        "exec": "cat /sys/class/hwmon/hwmon1/temp1_input | awk '{print int($1/1000)\"°C\"}'",
+        "interval": 2,
+        "format": " {}"
+    },
+    "custom/gpu_temp": {
+        "exec": "cat /sys/class/hwmon/hwmon0/temp1_input | awk '{print int($1/1000)\"°C\"}'",
+        "interval": 2,
+        "format": "󰢮 {}"
+    }
+}

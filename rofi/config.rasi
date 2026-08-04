@@ -1,0 +1,96 @@
+@theme "/dev/null"
+
+* {
+    /* Sith Palette */
+    bg: rgba(26, 0, 0, 0.9);        /* Koyu kırmızı/siyah transparan */
+    bg-alt: rgba(77, 0, 0, 0.6);     /* Daha açık kırmızı tonu */
+    fg: #ff3333;                     /* Parlak kırmızı yazılar */
+    fg-alt: #880000;                 /* Soluk kırmızı yazılar */
+    accent: #ff0000;                 /* Saf kırmızı vurgu */
+
+    background-color: transparent;
+    
+    border: 0;
+    margin: 0;
+    padding: 0;
+    spacing: 0;
+}
+
+configuration {
+    show-icons: true;
+    location: 0;
+    font: "JetBrainsMono Nerd Font 12";    
+    display-drun: "Search: ";
+}
+
+window {
+    width: 50%;
+    border-radius: 12px;
+    transparency: "real";
+    orientation: vertical;
+    border-width: 2px;
+    border-color: @accent;           /* Kırmızı dış çerçeve */
+    background-color: @bg; 
+}
+
+mainbox {
+    children: [inputbar, listview];
+    background-color: transparent;
+}
+
+/* --- BARRE DE RECHERCHE --- */
+
+inputbar {
+    children: [prompt, entry];
+    background-color: transparent;
+    border-radius: 12px;
+} 
+
+prompt {
+    background-color: transparent;
+    text-color: @accent;
+    padding: 15 6 0 15;
+}
+
+entry {
+    background-color: transparent;
+    text-color: @fg;
+    padding: 15 10 0 0;
+}
+
+/* --- LISTE DES APPLICATIONS --- */
+
+listview {
+    columns: 2;
+    lines: 15;
+    padding: 15 15;
+    fixed-height: false;
+    fixed-columns: true;
+    fixed-lines: true;
+    border: 0;
+    background-color: transparent;
+}
+
+element {
+    padding: 10;
+    text-color: @fg;                 /* Normal liste elemanları kırmızı */
+    background-color: transparent;
+    border-radius: 12px;
+}
+
+element selected {
+    text-color: #ffffff;             /* Seçili eleman yazısı beyaz (kontrast için) */
+    background-color: @bg-alt;       /* Seçili eleman arkaplanı koyu kırmızı */
+}
+
+element-text {
+    background-color: inherit;
+    text-color: inherit;
+    vertical-align: 0.5;
+}
+
+element-icon {
+    size: 25px;
+    background-color: inherit;
+    padding: 0 10 0 0;
+}
