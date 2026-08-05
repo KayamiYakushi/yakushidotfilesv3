@@ -214,3 +214,45 @@ tooltip {
   background-color: @base-bg;
   color: @base-fg;
 }
+
+/* ===========================
+ * Hover states
+ * =========================== */
+
+#custom-power:hover,
+#custom-logo:hover,
+#custom-launcher:hover,
+#custom-cava:hover,
+#custom-notification:hover,
+#cpu:hover,
+#memory:hover,
+#network:hover,
+#pulseaudio:hover,
+#bluetooth:hover,
+#battery:hover,
+#clock:hover,
+#window:hover,
+#tray:hover,
+#mpris:hover {
+    background-color: #4d0000;
+    color: #ff3333;
+}
+
+#custom-power:active,
+#custom-logo:active,
+#custom-launcher:active,
+#custom-cava:active,
+#custom-notification:active,
+#cpu:active,
+#memory:active,
+#network:active,
+#pulseaudio:active,
+#bluetooth:active,
+#battery:active,
+#clock:active,
+#window:active,
+#tray:active,
+#mpris:active {
+    background-color: #660000;
+    color: #ffffff;
+}
