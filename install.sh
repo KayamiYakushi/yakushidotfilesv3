@@ -118,6 +118,12 @@ done
 
 link_target "$DOTFILES_DIR/.bashrc" "$HOME/.bashrc"
 
+echo ":: Setting executable permissions..."
+find "$HOME/.config" -type f -path "*/scripts/*.sh" -exec chmod +x {} +
+
+echo ":: Initializing user directories..."
+xdg-user-dirs-update >/dev/null 2>&1 || true
+
 echo
 echo ":: Installation completed successfully."
 
