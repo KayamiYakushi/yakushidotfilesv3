@@ -2,18 +2,31 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BACKUP_DIR="$HOME/.config/yakushidotfiles-backup-$(date +%Y%m%d-%H%M%S)"
+BACKUP_DIR="$HOME/.local/share/yakushidotfiles/backups/$(date +%Y%m%d-%H%M%S)"
 
 if ! command -v pacman &>/dev/null; then
-    echo "ERROR: This script only works on Arch (based) systems that use pacman." >&2
+    echo "ERROR: This installer only supports Arch Linux and Arch-based distributions."
     exit 1
 fi
 
 if [ "$(id -u)" -eq 0 ]; then
-    echo "ERROR: Run this script as a regular user, not root." >&2
-    echo "      (sudo will ask for the password if needed)" >&2
+    echo "ERROR: Please run this installer as a regular user."
+    echo "sudo will be used automatically when required."
     exit 1
 fi
+
+echo "This installer will:"
+echo "  • Install the required packages"
+echo "  • Replace existing configuration files with symlinks"
+echo "  • Back up your current configuration files to:"
+echo "    $BACKUP_DIR"
+echo
+
+read -rp "Continue? [Y/n] " reply
+case "$reply" in
+    ""|[Yy]|[Yy][Ee][Ss]) ;;
+    *) echo "Installation cancelled."; exit 0 ;;
+esac
 
 CORE_PACKAGES=(
     hyprland
@@ -24,7 +37,7 @@ CORE_PACKAGES=(
     nautilus
     hyprshot
     hyprlock
-    awww
+    swww
     hyprsunset
     playerctl
     brightnessctl
@@ -41,7 +54,10 @@ FONT_PACKAGES=(
 
 RECOMMENDED_PACKAGES=(
     hyprpolkitagent
+    xdg-desktop-portal
     xdg-desktop-portal-hyprland
+    xdg-utils
+    xdg-user-dirs
 )
 
 ALL_PACKAGES=(
@@ -50,57 +66,71 @@ ALL_PACKAGES=(
     "${RECOMMENDED_PACKAGES[@]}"
 )
 
-
-echo ":: Synchronizing system ${#ALL_PACKAGES[@]} installing packages..."
+echo ":: Installing ${#ALL_PACKAGES[@]} packages..."
 sudo pacman -Syu --needed --noconfirm "${ALL_PACKAGES[@]}"
 
-echo ":: Font onbellegi yenileniyor..."
-fc-cache -f >/dev/null 2>&1 || true
+echo ":: Refreshing font cache..."
+fc-cache -f
 
 echo ":: Linking dotfiles..."
 mkdir -p "$HOME/.config"
 
-SKIP_LIST=("install.sh" "README.md" ".git" ".gitignore" ".bashrc")
+SKIP_LIST=(
+    install.sh
+    README.md
+    .git
+    .gitignore
+    .bashrc
+)
 
 should_skip() {
     local name="$1"
-    for s in "${SKIP_LIST[@]}"; do
-        [ "$name" = "$s" ] && return 0
+    for item in "${SKIP_LIST[@]}"; do
+        [[ "$name" == "$item" ]] && return 0
     done
     return 1
 }
 
-
 link_target() {
-    local src="$1" dest="$2"
+    local src="$1"
+    local dest="$2"
 
-    if [ -L "$dest" ] && [ "$(readlink -f "$dest" 2>/dev/null)" = "$(readlink -f "$src")" ]; then
-        echo "   -> $(basename "$dest") Up to date, skipping..."
-        return 0
+    if [[ -L "$dest" ]] && [[ "$(readlink -f "$dest")" == "$(readlink -f "$src")" ]]; then
+        echo "   • $(basename "$dest") is already linked."
+        return
     fi
 
-    if [ -e "$dest" ] || [ -L "$dest" ]; then
+    if [[ -e "$dest" || -L "$dest" ]]; then
         mkdir -p "$BACKUP_DIR"
-        echo "   -> Mevcut $(basename "$dest") Backing up... -> $BACKUP_DIR/"
+        echo "   • Backing up $(basename "$dest")..."
         mv "$dest" "$BACKUP_DIR/"
     fi
 
     ln -s "$src" "$dest"
-    echo "   -> $(basename "$dest") Linked."
+    echo "   • Linked $(basename "$dest")."
 }
 
 for config in "$DOTFILES_DIR"/*; do
-    config_name=$(basename "$config")
+    config_name="${config##*/}"
     should_skip "$config_name" && continue
     link_target "$config" "$HOME/.config/$config_name"
 done
 
 link_target "$DOTFILES_DIR/.bashrc" "$HOME/.bashrc"
 
-echo ""
-echo ":: Installation completed."
-if [ -d "$BACKUP_DIR" ]; then
-    echo "   Your old configurations have been backed up.: $BACKUP_DIR"
+echo
+echo ":: Installation completed successfully."
+
+if [[ -d "$BACKUP_DIR" ]]; then
+    echo "Backup location:"
+    echo "  $BACKUP_DIR"
 fi
-echo "   To start Hyprland: Hyprland (or select it from TTY/display manager)"
-echo "   -Syu is recommended to restart if it has brought a kernel/driver update."
+
+echo
+echo "You can now start Hyprland by selecting it from your display manager"
+echo "or by running:"
+echo
+echo "  Hyprland"
+echo
+echo "If the update installed a new kernel or graphics driver,"
+echo "it is recommended to reboot your system."
